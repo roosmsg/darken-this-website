@@ -61,6 +61,10 @@ The obvious way to turn white into dark grey while leaving darker tones alone is
 on `body` brings back the `position: fixed` problem, so that mode was dropped in favour of inverting
 only the pages that are light.
 
+## Original README
+
+The README of the add-on this fork started from is kept unchanged in `README.original.md`.
+
 ## License
 
 MIT, as the original. See `LICENSE`.
