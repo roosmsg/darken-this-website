@@ -1,6 +1,6 @@
-// Mute Whites: everything happens in the active tab, only after you click the
-// icon or press Alt+Shift+M. Nothing leaves the browser. The only thing stored
-// is the list of sites you switched on, so they stay inverted after a reload.
+// Mute Whites: nothing happens until you click the icon or press Alt+Shift+M.
+// Nothing leaves the browser. The only thing stored is the list of sites you
+// switched on, so they stay inverted after a reload; no script runs anywhere else.
 
 // Pages whose background is brighter than this are inverted; darker pages are
 // left alone, since they already have a dark mode. 0 = black, 1 = white.
@@ -85,8 +85,7 @@ function originOf(tab) {
 
 // ---------------------------------------------------------------------------
 // Switched-on sites are inverted on every load, before the page is drawn, so
-// the effect survives a reload. Each site needs its own host permission, which
-// Firefox asks you for once; the add-on never gets access to any other site.
+// the effect survives a reload.
 // ---------------------------------------------------------------------------
 const registrations = new Map(); // origin -> RegisteredContentScript
 
@@ -116,13 +115,11 @@ async function forget(origin) {
   if (list.includes(origin)) await browser.storage.local.set({ sites: list.filter((s) => s !== origin) });
   registrations.get(origin)?.unregister();
   registrations.delete(origin);
-  // The site's permission is kept, so switching it on again needs no prompt.
-  // Revoke it under the add-on's permissions in about:addons if you want.
 }
 
 // Click on a light page: invert it and remember the site. Click on a dark
 // page: report "–"; a second click inverts it anyway and remembers it. Click
-// on an inverted page: switch off and forget the site (its permission stays).
+// on an inverted page: switch off and forget the site.
 async function toggle(tab) {
   const state = states.get(tab.id) || "off";
   const origin = originOf(tab);
@@ -134,9 +131,6 @@ async function toggle(tab) {
     return;
   }
 
-  // The permission prompt has to come first: Firefox only allows it while the
-  // click is still being handled, and that is over after the first await.
-  const granted = origin ? await browser.permissions.request({ origins: [origin + "/*"] }) : false;
   let result;
   try {
     [result] = await browser.tabs.executeScript(tab.id, { code: code(state === "skipped" ? "force" : "auto"), runAt: "document_start" });
@@ -146,14 +140,12 @@ async function toggle(tab) {
     browser.browserAction.setTitle({ tabId: tab.id, title: "Mute Whites: not allowed on this page" });
     return;
   }
-  if (result === "inverted" && granted) await remember(origin);
+  if (result === "inverted" && origin) await remember(origin);
   setState(tab.id, result);
 }
 
 async function init() {
-  for (const origin of await sites()) {
-    if (await browser.permissions.contains({ origins: [origin + "/*"] })) await register(origin);
-  }
+  for (const origin of await sites()) await register(origin);
 }
 
 browser.browserAction.setBadgeBackgroundColor({ color: "#444" });
