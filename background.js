@@ -38,12 +38,11 @@ function apply(mode, dim, mediaDim, keepHues) {
 
 const code = (mode) => `(${apply.toString()})(${JSON.stringify(mode)}, ${DIM}, ${MEDIA_DIM}, ${KEEP_HUES});`;
 
-const BADGE = { off: "", inverted: "I" };
 const states = new Map(); // tab id -> "off" | "inverted"
 
 function setState(tabId, result) {
   states.set(tabId, result);
-  browser.browserAction.setBadgeText({ tabId, text: BADGE[result] });
+  browser.browserAction.setBadgeText({ tabId, text: "" });
 }
 
 function originOf(tab) {
@@ -111,7 +110,6 @@ async function init() {
   for (const origin of await sites()) await register(origin);
 }
 
-browser.browserAction.setBadgeBackgroundColor({ color: "#444" });
 browser.browserAction.onClicked.addListener(toggle);
 browser.commands.onCommand.addListener(async (command) => {
   if (command !== "toggle") return;

@@ -8,10 +8,10 @@ and kept in the same spirit: a handful of lines you can read in a minute, so you
   prompt. Nothing runs until you click the icon or press **Alt+Shift+M**, and no script runs on sites you
   did not switch on. No network.
 - **Click:** the page is inverted and dimmed to 85 %: dark background, light text, blue links turn yellow. Images, video, canvas and iframes get the inversion again, which cancels it
-  exactly, so photos are not negatives; they are dimmed a little more than the page (about 64 %). Badge `I`. The site is remembered and from then on inverted on every load, before the page is
+  exactly, so photos are not negatives; they are dimmed a little more than the page (about 64 %). The site is remembered and from then on inverted on every load, before the page is
   drawn, so a refresh changes nothing.
-- **Next click:** off, and the site is forgotten. Badge `!` means Firefox does not allow extensions on that
-  page (about:, addons.mozilla.org, the PDF viewer).
+- **Next click:** off, and the site is forgotten. A `!` badge means Firefox does not allow extensions on
+  that page (about:, addons.mozilla.org, the PDF viewer).
 - The list of switched-on sites is the only thing the add-on stores.
 
 ## Install
