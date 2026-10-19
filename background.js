@@ -12,7 +12,7 @@ const DIM = 0.85;
 // photos come back slightly duller, because the browser clamps colours between
 // the two filter passes. false: plain inversion, page colours become their
 // complements, but images and video are restored exact.
-const KEEP_HUES = true;
+const KEEP_HUES = false;
 
 // Runs inside the page. Must be self-contained: it is sent as source text.
 // Returns "inverted", "skipped" or "off".
