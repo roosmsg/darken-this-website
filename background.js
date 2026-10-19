@@ -1,5 +1,5 @@
 // Mute Whites: everything happens in the active tab, only after you click the
-// icon. Nothing is stored and nothing leaves the browser.
+// icon or press Alt+Shift+M. Nothing is stored and nothing leaves the browser.
 
 // Pages whose background is brighter than this are inverted; darker pages are
 // left alone, since they already have a dark mode. 0 = black, 1 = white.
@@ -84,3 +84,12 @@ async function cycle(tab) {
 
 browser.browserAction.setBadgeBackgroundColor({ color: "#444" });
 browser.browserAction.onClicked.addListener(cycle);
+browser.commands.onCommand.addListener(async (command) => {
+  if (command !== "cycle") return;
+  const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
+  if (tab) cycle(tab);
+});
+
+// The injected style is gone after a navigation, so forget the tab's state.
+browser.tabs.onUpdated.addListener((tabId, info) => { if (info.status === "loading") states.delete(tabId); });
+browser.tabs.onRemoved.addListener((tabId) => states.delete(tabId));

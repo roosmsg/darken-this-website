@@ -1,13 +1,22 @@
 {
   "manifest_version": 2,
   "name": "Mute Whites",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Click the icon: a page with a light background is inverted and dimmed a little, images and video stay as they are, pages that are already dark are left alone. Click again to switch off. Only activeTab; no storage, no network, nothing runs until you click.",
   "permissions": ["activeTab"],
   "background": {
     "scripts": ["background.js"]
   },
   "browser_action": {
-    "default_title": "Mute Whites: click to invert a light page / switch off"
+    "default_title": "Mute Whites: click to invert a light page / switch off (Alt+Shift+M)"
+  },
+  "commands": {
+    "cycle": {
+      "suggested_key": { "default": "Alt+Shift+M" },
+      "description": "Invert a light page, or switch off, on the active tab"
+    }
+  },
+  "browser_specific_settings": {
+    "gecko": { "id": "mute-whites@djinx.local", "strict_min_version": "115.0" }
   }
 }
