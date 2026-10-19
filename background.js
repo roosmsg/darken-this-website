@@ -1,4 +1,4 @@
-// Mute Whites: nothing happens until you click the icon or press Alt+Shift+M.
+// Darken this website: nothing happens until you click the icon or press Alt+Shift+M.
 // Nothing leaves the browser. The only thing stored is the list of sites you
 // switched on, so they stay inverted after a reload; no script runs anywhere else.
 
@@ -17,7 +17,7 @@ const KEEP_HUES = false;
 // Runs inside the page. Must be self-contained: it is sent as source text.
 // Returns "inverted" or "off".
 function apply(mode, dim, mediaDim, keepHues) {
-  const ID = "mute-whites-style";
+  const ID = "darken-this-website-style";
   document.getElementById(ID)?.remove();
   if (mode === "off") return "off";
 
@@ -99,7 +99,7 @@ async function toggle(tab) {
   } catch (error) {
     // Pages Firefox never lets extensions touch (about:, addons.mozilla.org, PDF viewer).
     browser.browserAction.setBadgeText({ tabId: tab.id, text: "!" });
-    browser.browserAction.setTitle({ tabId: tab.id, title: "Mute Whites: not allowed on this page" });
+    browser.browserAction.setTitle({ tabId: tab.id, title: "Darken this website: not allowed on this page" });
     return;
   }
   if (origin) await (on ? remember(origin) : forget(origin));

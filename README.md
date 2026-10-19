@@ -1,4 +1,4 @@
-# Mute Whites
+# Darken this website
 
 A minimal Firefox add-on that takes the glare out of web pages, one tab at a time.
 Forked from [lineality/invert_colors_minimal_firefox_addon](https://github.com/lineality/invert_colors_minimal_firefox_addon)
@@ -19,12 +19,12 @@ and kept in the same spirit: a handful of lines you can read in a minute, so you
 Temporary (gone after a restart): `about:debugging#/runtime/this-firefox` → *Load Temporary Add-on…* → `manifest.json`.
 
 Permanent on Firefox ESR, Developer Edition or Nightly: set `xpinstall.signatures.required` to `false` in
-`about:config`, then open `mute-whites.xpi` in Firefox (Ctrl+O) and confirm. Release builds of Firefox
+`about:config`, then open `darken-this-website.xpi` in Firefox (Ctrl+O) and confirm. Release builds of Firefox
 refuse unsigned add-ons; there the add-on would have to be signed through addons.mozilla.org first.
 
 ## Build
 
-`build.ps1` packs `manifest.json`, `background.js` and `icon.svg` into `mute-whites.xpi`.
+`build.ps1` packs `manifest.json`, `background.js` and `icon.svg` into `darken-this-website.xpi`.
 
 ## Tuning
 

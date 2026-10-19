@@ -1,6 +1,6 @@
 {
   "manifest_version": 2,
-  "name": "Mute Whites",
+  "name": "Darken this website",
   "version": "1.3.0",
   "description": "Inverts and slightly dims a page; images and video keep their colours. One click switches a site on and remembers it, the next click switches it off. No network, nothing runs on sites you did not switch on.",
   "homepage_url": "https://github.com/roosmsg/invert_colors_minimal_firefox_addon",
@@ -15,7 +15,7 @@
     ]
   },
   "browser_action": {
-    "default_title": "Mute Whites: click to switch this site on or off (Alt+Shift+M)",
+    "default_title": "Darken this website: click to switch this site on or off (Alt+Shift+M)",
     "default_icon": "icon.svg"
   },
   "icons": {
@@ -32,7 +32,7 @@
   },
   "browser_specific_settings": {
     "gecko": {
-      "id": "mute-whites@djinx.local",
+      "id": "darken-this-website@djinx.local",
       "strict_min_version": "140.0",
       "data_collection_permissions": {
         "required": [
