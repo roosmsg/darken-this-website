@@ -8,7 +8,7 @@ and kept in the same spirit: a handful of lines you can read in a minute, so you
   icon or press **Alt+Shift+M**. No network, no content scripts on sites you did not switch on.
 - **Click:** if the page has a light background it is inverted and dimmed to 85 %: dark background, light
   text, blue links turn yellow. Images, video, canvas and iframes get the inversion again, which cancels it
-  exactly, so photos are not negatives. Badge `I`. The site is remembered: Firefox asks once for permission to that one site, and
+  exactly, so photos are not negatives; they are dimmed a little more than the page (about 64 %). Badge `I`. The site is remembered: Firefox asks once for permission to that one site, and
   from then on it is inverted on every load, before the page is drawn, so a refresh changes nothing.
 - **Pages that are already dark** are left alone; badge `–`. A second click inverts them anyway.
 - **Next click:** off, and the site is forgotten; the permission is handed back. Badge `!` means Firefox does
@@ -31,7 +31,7 @@ refuse unsigned add-ons; there the add-on would have to be signed through addons
 ## Tuning
 
 At the top of `background.js`: `LIGHT_THRESHOLD` (0.65: anything brighter counts as a light page), `DIM`
-(0.85) and `KEEP_HUES` (off). Switching `KEEP_HUES` on rotates hues 180 degrees after inverting so blue
+(0.85), `MEDIA_DIM` (0.75, extra dim for images and video) and `KEEP_HUES` (off). Switching `KEEP_HUES` on rotates hues 180 degrees after inverting so blue
 links stay blue, at a price: Firefox clamps colours between the two filter passes, so saturated photos
 come back slightly duller. Rebuild the .xpi afterwards.
 

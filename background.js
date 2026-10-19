@@ -8,6 +8,9 @@ const LIGHT_THRESHOLD = 0.65;
 // Brightness applied on top of the inversion, so the result is a little
 // dimmer than a plain inverted page.
 const DIM = 0.85;
+// Extra brightness factor for images and video, on top of DIM, because they
+// come back at full strength after the second inversion.
+const MEDIA_DIM = 0.75;
 // true: rotate hues 180 degrees after inverting so blue stays blue; saturated
 // photos come back slightly duller, because the browser clamps colours between
 // the two filter passes. false: plain inversion, page colours become their
@@ -16,7 +19,7 @@ const KEEP_HUES = false;
 
 // Runs inside the page. Must be self-contained: it is sent as source text.
 // Returns "inverted", "skipped" or "off".
-function apply(mode, threshold, dim, keepHues) {
+function apply(mode, threshold, dim, mediaDim, keepHues) {
   const ID = "mute-whites-style";
   document.getElementById(ID)?.remove();
   if (mode === "off") return "off";
@@ -47,19 +50,21 @@ function apply(mode, threshold, dim, keepHues) {
   }
 
   // Invert, then dim a little. Media gets the inversion again, which cancels
-  // it, so photos are not negatives; the dim stays. The filter sits on the
-  // root element, which the CSS spec exempts from breaking position: fixed.
+  // it, so photos are not negatives, plus its own dim. That dim must come
+  // before the inner inversion: applied after it, the outer inversion would
+  // turn it into lifted blacks instead of darker images. The filter sits on
+  // the root element, which the CSS spec exempts from breaking position: fixed.
   const invert = keepHues ? "invert(1) hue-rotate(180deg)" : "invert(1)";
   const style = document.createElement("style");
   style.id = ID;
   style.textContent =
     `html { filter: ${invert} brightness(${dim}) !important; }` +
-    `img, picture, video, canvas, object, embed, iframe { filter: ${invert} !important; }`;
+    `img, picture, video, canvas, object, embed, iframe { filter: brightness(${mediaDim}) ${invert} !important; }`;
   document.documentElement.appendChild(style);
   return "inverted";
 }
 
-const code = (mode) => `(${apply.toString()})(${JSON.stringify(mode)}, ${LIGHT_THRESHOLD}, ${DIM}, ${KEEP_HUES});`;
+const code = (mode) => `(${apply.toString()})(${JSON.stringify(mode)}, ${LIGHT_THRESHOLD}, ${DIM}, ${MEDIA_DIM}, ${KEEP_HUES});`;
 
 const BADGE = { off: "", inverted: "I", skipped: "–" };
 const states = new Map(); // tab id -> "off" | "inverted" | "skipped"
