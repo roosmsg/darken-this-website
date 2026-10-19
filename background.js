@@ -2,9 +2,6 @@
 // Nothing leaves the browser. The only thing stored is the list of sites you
 // switched on, so they stay inverted after a reload; no script runs anywhere else.
 
-// Pages whose background is brighter than this are inverted; darker pages are
-// left alone, since they already have a dark mode. 0 = black, 1 = white.
-const LIGHT_THRESHOLD = 0.65;
 // Brightness applied on top of the inversion, so the result is a little
 // dimmer than a plain inverted page.
 const DIM = 0.85;
@@ -18,36 +15,11 @@ const MEDIA_DIM = 0.75;
 const KEEP_HUES = false;
 
 // Runs inside the page. Must be self-contained: it is sent as source text.
-// Returns "inverted", "skipped" or "off".
-function apply(mode, threshold, dim, mediaDim, keepHues) {
+// Returns "inverted" or "off".
+function apply(mode, dim, mediaDim, keepHues) {
   const ID = "mute-whites-style";
   document.getElementById(ID)?.remove();
   if (mode === "off") return "off";
-
-  if (mode === "auto") {
-    // Background luminance at a few points of the viewport, walking up from
-    // the element under each point to the first ancestor that paints a
-    // background. The canvas itself is white when nothing paints one.
-    const parse = (color) => {
-      const m = color && color.match(/\d+(\.\d+)?/g);
-      if (!m || m.length < 3 || (m.length > 3 && Number(m[3]) === 0)) return null;
-      return [Number(m[0]), Number(m[1]), Number(m[2])];
-    };
-    const luminance = ([r, g, b]) => (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
-    const backgroundOf = (element) => {
-      for (let e = element; e; e = e.parentElement) {
-        const c = parse(getComputedStyle(e).backgroundColor);
-        if (c) return c;
-      }
-      return [255, 255, 255];
-    };
-    const w = innerWidth, h = innerHeight;
-    const points = [[w / 2, h / 2], [w * 0.1, h * 0.1], [w * 0.9, h * 0.1], [w * 0.1, h * 0.9], [w * 0.9, h * 0.9]];
-    const samples = points.map(([x, y]) => document.elementFromPoint(x, y)).filter(Boolean).map((e) => luminance(backgroundOf(e)));
-    if (!samples.length) samples.push(luminance(backgroundOf(document.body || document.documentElement)));
-    samples.sort((a, b) => a - b);
-    if (samples[Math.floor(samples.length / 2)] <= threshold) return "skipped";
-  }
 
   // Invert, then dim a little. Media gets the inversion again, which cancels
   // it, so photos are not negatives, plus its own dim. That dim must come
@@ -64,10 +36,10 @@ function apply(mode, threshold, dim, mediaDim, keepHues) {
   return "inverted";
 }
 
-const code = (mode) => `(${apply.toString()})(${JSON.stringify(mode)}, ${LIGHT_THRESHOLD}, ${DIM}, ${MEDIA_DIM}, ${KEEP_HUES});`;
+const code = (mode) => `(${apply.toString()})(${JSON.stringify(mode)}, ${DIM}, ${MEDIA_DIM}, ${KEEP_HUES});`;
 
-const BADGE = { off: "", inverted: "I", skipped: "–" };
-const states = new Map(); // tab id -> "off" | "inverted" | "skipped"
+const BADGE = { off: "", inverted: "I" };
+const states = new Map(); // tab id -> "off" | "inverted"
 
 function setState(tabId, result) {
   states.set(tabId, result);
@@ -98,7 +70,7 @@ async function register(origin) {
   if (registrations.has(origin)) return;
   const registration = await browser.contentScripts.register({
     matches: [origin + "/*"],
-    js: [{ code: `${code("force")} browser.runtime.sendMessage("inverted");` }],
+    js: [{ code: `${code("on")} browser.runtime.sendMessage("inverted");` }],
     runAt: "document_start",
   });
   registrations.set(origin, registration);
@@ -117,30 +89,21 @@ async function forget(origin) {
   registrations.delete(origin);
 }
 
-// Click on a light page: invert it and remember the site. Click on a dark
-// page: report "–"; a second click inverts it anyway and remembers it. Click
-// on an inverted page: switch off and forget the site.
+// Click: invert the page and remember the site. Click again: switch off and
+// forget the site. Two states, like the original.
 async function toggle(tab) {
-  const state = states.get(tab.id) || "off";
+  const on = states.get(tab.id) !== "inverted";
   const origin = originOf(tab);
-
-  if (state === "inverted") {
-    try { await browser.tabs.executeScript(tab.id, { code: code("off"), runAt: "document_start" }); } catch (error) { /* nothing injected */ }
-    if (origin) await forget(origin);
-    setState(tab.id, "off");
-    return;
-  }
-
   let result;
   try {
-    [result] = await browser.tabs.executeScript(tab.id, { code: code(state === "skipped" ? "force" : "auto"), runAt: "document_start" });
+    [result] = await browser.tabs.executeScript(tab.id, { code: code(on ? "on" : "off"), runAt: "document_start" });
   } catch (error) {
     // Pages Firefox never lets extensions touch (about:, addons.mozilla.org, PDF viewer).
     browser.browserAction.setBadgeText({ tabId: tab.id, text: "!" });
     browser.browserAction.setTitle({ tabId: tab.id, title: "Mute Whites: not allowed on this page" });
     return;
   }
-  if (result === "inverted" && origin) await remember(origin);
+  if (origin) await (on ? remember(origin) : forget(origin));
   setState(tab.id, result);
 }
 
