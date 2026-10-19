@@ -3,7 +3,7 @@
   "name": "Darken this website",
   "version": "1.3.0",
   "description": "Inverts and slightly dims a page; images and video keep their colours. One click switches a site on and remembers it, the next click switches it off. No network, nothing runs on sites you did not switch on.",
-  "homepage_url": "https://github.com/roosmsg/invert_colors_minimal_firefox_addon",
+  "homepage_url": "https://github.com/roosmsg/darken-this-website",
   "permissions": [
     "activeTab",
     "storage",
