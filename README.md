@@ -4,15 +4,17 @@ A minimal Firefox add-on that takes the glare out of web pages, one tab at a tim
 Forked from [lineality/invert_colors_minimal_firefox_addon](https://github.com/lineality/invert_colors_minimal_firefox_addon)
 and kept in the same spirit: a handful of lines you can read in a minute, so you know exactly what runs.
 
-- **Permission:** `activeTab` only. Nothing runs until you click the icon or press **Alt+Shift+M**, and then
-  only in that tab. No storage, no network, no content scripts on other pages.
+- **Permissions:** `activeTab` and `storage`, plus the sites you switch on. Nothing runs until you click the
+  icon or press **Alt+Shift+M**. No network, no content scripts on sites you did not switch on.
 - **Click:** if the page has a light background it is inverted (hues rotated back, so blue stays blue) and
   dimmed to 85 %. Images, video, canvas and iframes get the inversion again, which cancels it, so photos are
-  not negatives. Badge `I`.
+  not negatives. Badge `I`. The site is remembered: Firefox asks once for permission to that one site, and
+  from then on it is inverted on every load, before the page is drawn, so a refresh changes nothing.
 - **Pages that are already dark** are left alone; badge `–`. A second click inverts them anyway.
-- **Next click:** off. Badge `!` means Firefox does not allow extensions on that page (about:,
-  addons.mozilla.org, the PDF viewer).
-- The effect lives in the page, so it is gone after a navigation; click again.
+- **Next click:** off, and the site is forgotten; the permission is handed back. Badge `!` means Firefox does
+  not allow extensions on that page (about:, addons.mozilla.org, the PDF viewer).
+- The list of switched-on sites is the only thing the add-on stores. It is visible under the add-on's
+  permissions in `about:addons`.
 
 ## Install
 

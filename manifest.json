@@ -1,23 +1,28 @@
 {
   "manifest_version": 2,
   "name": "Mute Whites",
-  "version": "1.2.0",
-  "description": "Click the icon: a page with a light background is inverted and dimmed a little, images and video stay as they are, pages that are already dark are left alone. Click again to switch off. Only activeTab; no storage, no network, nothing runs until you click.",
+  "version": "1.3.0",
+  "description": "Inverts and slightly dims pages with a light background; dark pages and images are left alone. One click switches a site on and remembers it, the next click switches it off. Only activeTab plus the sites you switch on, no network.",
   "homepage_url": "https://github.com/roosmsg/invert_colors_minimal_firefox_addon",
-  "permissions": ["activeTab"],
+  "permissions": ["activeTab", "storage"],
+  "optional_permissions": ["<all_urls>"],
   "background": { "scripts": ["background.js"] },
   "browser_action": {
-    "default_title": "Mute Whites: click to invert a light page / switch off (Alt+Shift+M)",
+    "default_title": "Mute Whites: click to switch this site on or off (Alt+Shift+M)",
     "default_icon": "icon.svg"
   },
   "icons": { "48": "icon.svg", "96": "icon.svg" },
   "commands": {
-    "cycle": {
+    "toggle": {
       "suggested_key": { "default": "Alt+Shift+M" },
-      "description": "Invert a light page, or switch off, on the active tab"
+      "description": "Switch the current site on or off"
     }
   },
   "browser_specific_settings": {
-    "gecko": { "id": "mute-whites@djinx.local", "strict_min_version": "115.0" }
+    "gecko": {
+      "id": "mute-whites@djinx.local",
+      "strict_min_version": "140.0",
+      "data_collection_permissions": { "required": ["none"] }
+    }
   }
 }
