@@ -18,7 +18,25 @@ const KEEP_HUES = false;
 // Returns "inverted" or "off".
 function apply(mode, dim, mediaDim, keepHues) {
   const ID = "darken-this-website-style";
-  document.getElementById(ID)?.remove();
+
+  // A page stylesheet does not reach into shadow DOM, so a video player built
+  // as a web component (its <video> inside an open shadow root) would stay
+  // inverted. Every open shadow root gets its own copy of the media rule, and
+  // a MutationObserver keeps that up to date for players added later. Closed
+  // shadow roots cannot be reached and stay inverted.
+  const shadowRoots = (root, found = []) => {
+    for (const el of root.querySelectorAll("*")) {
+      if (el.shadowRoot) {
+        found.push(el.shadowRoot);
+        shadowRoots(el.shadowRoot, found);
+      }
+    }
+    return found;
+  };
+
+  globalThis.darkenObserver?.disconnect();
+  clearTimeout(globalThis.darkenTimer);
+  for (const root of [document, ...shadowRoots(document)]) root.getElementById(ID)?.remove();
   if (mode === "off") return "off";
 
   // Invert, then dim a little. Media gets the inversion again, which cancels
@@ -27,12 +45,30 @@ function apply(mode, dim, mediaDim, keepHues) {
   // turn it into lifted blacks instead of darker images. The filter sits on
   // the root element, which the CSS spec exempts from breaking position: fixed.
   const invert = keepHues ? "invert(1) hue-rotate(180deg)" : "invert(1)";
-  const style = document.createElement("style");
-  style.id = ID;
-  style.textContent =
-    `html { filter: ${invert} brightness(${dim}) !important; }` +
-    `img, picture, video, canvas, object, embed, iframe { filter: brightness(${mediaDim}) ${invert} !important; }`;
-  document.documentElement.appendChild(style);
+  const page = `html { filter: ${invert} brightness(${dim}) !important; }`;
+  const media = `img, picture, video, canvas, object, embed, iframe { filter: brightness(${mediaDim}) ${invert} !important; }`;
+  const place = (root, css) => {
+    if (root.getElementById(ID)) return;
+    const style = document.createElement("style");
+    style.id = ID;
+    style.textContent = css;
+    (root === document ? document.documentElement : root).appendChild(style);
+  };
+  place(document, page + media);
+
+  const observer = new MutationObserver(() => {
+    clearTimeout(globalThis.darkenTimer);
+    globalThis.darkenTimer = setTimeout(scan, 200);
+  });
+  function scan() {
+    for (const root of shadowRoots(document)) {
+      place(root, media);
+      observer.observe(root, { childList: true, subtree: true });
+    }
+  }
+  observer.observe(document.documentElement, { childList: true, subtree: true });
+  globalThis.darkenObserver = observer;
+  scan();
   return "inverted";
 }
 
