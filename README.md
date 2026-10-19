@@ -47,20 +47,6 @@ At the top of `background.js`: `DIM` (0.85), `MEDIA_DIM` (0.75, extra dim for im
 links stay blue, at a price: Firefox clamps colours between the two filter passes, so saturated photos
 come back slightly duller. Rebuild the .xpi afterwards.
 
-## Why not the original one-liner
-
-The original sets `filter: invert(100%)` on `body`. A filter on `body` makes it the containing block for
-`position: fixed`, so sticky headers and menus scroll away with the page, and photos are shown as
-negatives. This fork filters the root element (which the CSS spec exempts from that rule), cancels the
-filter on media and dims a little.
-
-## Why no "mute whites to grey" mode
-
-The obvious way to turn white into dark grey while leaving darker tones alone is an SVG tone curve
-(`feComponentTransfer`). Firefox does not apply SVG reference filters on the root element, and putting it
-on `body` brings back the `position: fixed` problem, so that mode was dropped in favour of inverting
-only the pages that are light.
-
 ## Original README
 
 The README of the add-on this fork started from is kept unchanged in `README.original.md`.
