@@ -11,8 +11,9 @@ and kept in the same spirit: a handful of lines you can read in a minute, so you
   exactly, so photos are not negatives; they are dimmed a little more than the page (about 64 %). Badge `I`. The site is remembered: Firefox asks once for permission to that one site, and
   from then on it is inverted on every load, before the page is drawn, so a refresh changes nothing.
 - **Pages that are already dark** are left alone; badge `–`. A second click inverts them anyway.
-- **Next click:** off, and the site is forgotten; the permission is handed back. Badge `!` means Firefox does
-  not allow extensions on that page (about:, addons.mozilla.org, the PDF viewer).
+- **Next click:** off, and the site is forgotten. Its permission is kept so that switching it on again
+  needs no prompt; revoke it under the add-on's permissions in `about:addons` if you want. Badge `!` means
+  Firefox does not allow extensions on that page (about:, addons.mozilla.org, the PDF viewer).
 - The list of switched-on sites is the only thing the add-on stores. It is visible under the add-on's
   permissions in `about:addons`.
 

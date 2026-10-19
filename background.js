@@ -116,12 +116,13 @@ async function forget(origin) {
   if (list.includes(origin)) await browser.storage.local.set({ sites: list.filter((s) => s !== origin) });
   registrations.get(origin)?.unregister();
   registrations.delete(origin);
-  await browser.permissions.remove({ origins: [origin + "/*"] });
+  // The site's permission is kept, so switching it on again needs no prompt.
+  // Revoke it under the add-on's permissions in about:addons if you want.
 }
 
 // Click on a light page: invert it and remember the site. Click on a dark
 // page: report "–"; a second click inverts it anyway and remembers it. Click
-// on an inverted page: switch off and forget the site.
+// on an inverted page: switch off and forget the site (its permission stays).
 async function toggle(tab) {
   const state = states.get(tab.id) || "off";
   const origin = originOf(tab);
@@ -141,13 +142,11 @@ async function toggle(tab) {
     [result] = await browser.tabs.executeScript(tab.id, { code: code(state === "skipped" ? "force" : "auto"), runAt: "document_start" });
   } catch (error) {
     // Pages Firefox never lets extensions touch (about:, addons.mozilla.org, PDF viewer).
-    if (granted) await browser.permissions.remove({ origins: [origin + "/*"] });
     browser.browserAction.setBadgeText({ tabId: tab.id, text: "!" });
     browser.browserAction.setTitle({ tabId: tab.id, title: "Mute Whites: not allowed on this page" });
     return;
   }
   if (result === "inverted" && granted) await remember(origin);
-  if (result === "skipped" && granted) await browser.permissions.remove({ origins: [origin + "/*"] });
   setState(tab.id, result);
 }
 
