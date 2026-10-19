@@ -22,6 +22,21 @@ Permanent on Firefox ESR, Developer Edition or Nightly: set `xpinstall.signature
 `about:config`, then open `darken-this-website.xpi` in Firefox (Ctrl+O) and confirm. Release builds of Firefox
 refuse unsigned add-ons; there the add-on would have to be signed through addons.mozilla.org first.
 
+## Moving to another computer
+
+The add-on does not travel with Firefox Sync. Sync only carries add-ons that were installed from
+addons.mozilla.org; a self-built `.xpi` is invisible to it, and so is the list of switched-on sites, which
+lives in the add-on's local storage on that machine. On a new computer:
+
+1. Clone this repository and run `build.ps1` (or zip `manifest.json`, `background.js` and `icon.svg`).
+2. In Firefox ESR, Developer Edition or Nightly, set `xpinstall.signatures.required` to `false` in `about:config`.
+3. Open `darken-this-website.xpi` with Ctrl+O and confirm.
+4. Switch your sites on again with a click.
+
+If you want the site list to follow you, change `browser.storage.local` to `browser.storage.sync` in
+`background.js`; Firefox then syncs the list between machines that have the add-on installed and are
+signed in to the same account.
+
 ## Build
 
 `build.ps1` packs `manifest.json`, `background.js` and `icon.svg` into `darken-this-website.xpi`.
