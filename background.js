@@ -13,6 +13,12 @@ const MEDIA_DIM = 0.75;
 // the two filter passes. false: plain inversion, page colours become their
 // complements, but images and video are restored exact.
 const KEEP_HUES = false;
+// true: follow the system colour scheme. Remembered sites are inverted only
+// while the system is in dark mode; when it switches to light mode every
+// inverted tab is restored, and when it switches back they are inverted again.
+// A click works in either mode and lasts until the next load. false: remembered
+// sites are inverted whatever the system does.
+const FOLLOW_SYSTEM = true;
 
 // Runs inside the page. Must be self-contained: it is sent as source text.
 // Returns "inverted" or "off".
@@ -91,8 +97,18 @@ function originOf(tab) {
 }
 
 // ---------------------------------------------------------------------------
+// With FOLLOW_SYSTEM the inversion is tied to the system colour scheme. The
+// background page sees the same prefers-color-scheme as web pages do: by
+// default the operating system setting, unless a Firefox theme or the
+// "Website appearance" setting in Firefox overrides it.
+// ---------------------------------------------------------------------------
+const darkMode = window.matchMedia("(prefers-color-scheme: dark)");
+const active = () => !FOLLOW_SYSTEM || darkMode.matches;
+
+// ---------------------------------------------------------------------------
 // Switched-on sites are inverted on every load, before the page is drawn, so
-// the effect survives a reload.
+// the effect survives a reload. With FOLLOW_SYSTEM only while the system is
+// in dark mode.
 // ---------------------------------------------------------------------------
 const registrations = new Map(); // origin -> RegisteredContentScript
 
@@ -102,13 +118,18 @@ async function sites() {
 }
 
 async function register(origin) {
-  if (registrations.has(origin)) return;
+  if (!active() || registrations.has(origin)) return;
   const registration = await browser.contentScripts.register({
     matches: [origin + "/*"],
     js: [{ code: `${code("on")} browser.runtime.sendMessage("inverted");` }],
     runAt: "document_start",
   });
   registrations.set(origin, registration);
+}
+
+function unregisterAll() {
+  for (const registration of registrations.values()) registration.unregister();
+  registrations.clear();
 }
 
 async function remember(origin) {
@@ -142,6 +163,33 @@ async function toggle(tab) {
   setState(tab.id, result);
 }
 
+// Switch a tab that is inverted or restored by the system, not by a click.
+// Pages Firefox never lets extensions touch are left alone.
+async function run(tabId, mode) {
+  try {
+    const [result] = await browser.tabs.executeScript(tabId, { code: code(mode), runAt: "document_start" });
+    setState(tabId, result);
+  } catch (error) {}
+}
+
+// The system switched colour scheme. Dark: arm the remembered sites for their
+// next load and invert the ones that are open now; discarded tabs are left
+// alone, they load inverted. Light: nothing is inverted on load any more and
+// every inverted tab is restored; the sites stay remembered.
+async function schemeChanged() {
+  if (active()) {
+    const list = await sites();
+    for (const origin of list) await register(origin);
+    for (const tab of await browser.tabs.query({ discarded: false })) {
+      const origin = originOf(tab);
+      if (origin && list.includes(origin) && states.get(tab.id) !== "inverted") await run(tab.id, "on");
+    }
+  } else {
+    unregisterAll();
+    for (const [tabId, state] of states) if (state === "inverted") await run(tabId, "off");
+  }
+}
+
 async function init() {
   for (const origin of await sites()) await register(origin);
 }
@@ -160,5 +208,12 @@ browser.runtime.onMessage.addListener((message, sender) => {
 // The injected style is gone after a navigation, so forget the tab's state.
 browser.tabs.onUpdated.addListener((tabId, info) => { if (info.status === "loading") states.delete(tabId); });
 browser.tabs.onRemoved.addListener((tabId) => states.delete(tabId));
+
+// Scheme changes are handled one at a time, so a quick back-and-forth ends in
+// the state the system is actually in.
+if (FOLLOW_SYSTEM) {
+  let queue = Promise.resolve();
+  darkMode.addEventListener("change", () => { queue = queue.then(schemeChanged); });
+}
 
 init();

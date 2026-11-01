@@ -11,6 +11,11 @@ and kept in the same spirit: a handful of lines you can read in a minute, so you
   exactly, so photos are not negatives; they are dimmed a little more than the page (about 64 %). This also reaches
   into open shadow roots, so video players built as web components are not negatives either; closed shadow roots cannot be reached. The site is remembered and from then on inverted on every load, before the page is
   drawn, so a refresh changes nothing.
+- **System dark mode:** the add-on follows your system. Remembered sites are inverted only while the system is in
+  dark mode. The moment it switches to light mode every inverted tab is restored, and when it switches back they
+  are inverted again. A click works in either mode and lasts until the next load. "Dark mode" is what Firefox
+  reports to pages as `prefers-color-scheme`: by default the operating system's setting, which a Firefox theme or
+  *Website appearance* in Firefox's settings can override.
 - **Next click:** off, and the site is forgotten. A `!` badge means Firefox does not allow extensions on
   that page (about:, addons.mozilla.org, the PDF viewer).
 - The list of switched-on sites is the only thing the add-on stores.
@@ -44,9 +49,11 @@ signed in to the same account.
 
 ## Tuning
 
-At the top of `background.js`: `DIM` (0.85), `MEDIA_DIM` (0.75, extra dim for images and video) and `KEEP_HUES` (off). Switching `KEEP_HUES` on rotates hues 180 degrees after inverting so blue
+At the top of `background.js`: `DIM` (0.85), `MEDIA_DIM` (0.75, extra dim for images and video), `KEEP_HUES` (off)
+and `FOLLOW_SYSTEM` (on). Switching `KEEP_HUES` on rotates hues 180 degrees after inverting so blue
 links stay blue, at a price: Firefox clamps colours between the two filter passes, so saturated photos
-come back slightly duller. Rebuild the .xpi afterwards.
+come back slightly duller. Switching `FOLLOW_SYSTEM` off inverts remembered sites whatever the system does.
+Rebuild the .xpi afterwards.
 
 ## Original README
 
