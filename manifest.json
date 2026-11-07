@@ -1,0 +1,44 @@
+{
+  "manifest_version": 2,
+  "name": "Darken this website",
+  "version": "1.4.0",
+  "description": "Inverts and slightly dims a page; images and video keep their colours. One click switches a site on and remembers it, the next click switches it off. Remembered sites are inverted only while the system is in dark mode. No network.",
+  "homepage_url": "https://github.com/roosmsg/darken-this-website",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "browser_action": {
+    "default_title": "Darken this website: click to switch this site on or off (Alt+Shift+M)",
+    "default_icon": "icon.svg"
+  },
+  "icons": {
+    "48": "icon.svg",
+    "96": "icon.svg"
+  },
+  "commands": {
+    "toggle": {
+      "suggested_key": {
+        "default": "Alt+Shift+M"
+      },
+      "description": "Switch the current site on or off"
+    }
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "darken-this-website@djinx.local",
+      "strict_min_version": "140.0",
+      "data_collection_permissions": {
+        "required": [
+          "none"
+        ]
+      }
+    }
+  }
+}
