@@ -1,4 +1,4 @@
-<p align="center"><img src="logo/banner.png" alt="Darken this website: a page with the left half light and the right half darkened"></p>
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="logo/darken-this-website-256.png"><img src="logo/darken-this-website-tile-256.png" width="128" alt="Darken this website logo"></picture></p>
 
 # Darken this website
 
@@ -27,6 +27,8 @@ Signing it on addons.mozilla.org (see *Install*) only means Mozilla checks and s
 private and does not appear in the store.
 
 ## How it works
+
+<p align="center"><img src="logo/banner.png" width="480" alt="A page with the left half light and the right half darkened"></p>
 
 - **Click the icon or press Alt+Shift+M:** the site is switched on and remembered. From then on it is
   dark on every load, before the page is drawn. Click again to switch it off and forget it.
