@@ -1,3 +1,5 @@
+<p align="center"><img src="logo/banner.png" alt="Darken this website: a page with the left half light and the right half darkened"></p>
+
 # Darken this website
 
 A Firefox add-on that gives a dark mode to websites that have none of their own. Switch a site on once
