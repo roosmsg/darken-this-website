@@ -50,7 +50,8 @@ few minutes, and keeps the add-on private: it is not published in the add-on sto
 
 ### Sign it once on addons.mozilla.org
 
-1. Run `build.ps1`. It makes `darken-this-website.xpi`.
+1. Run `build.ps1`. It makes `darken-this-website.xpi`. Or download the prebuilt
+   [release](https://github.com/roosmsg/darken-this-website/releases/latest).
 2. Go to the [Developer Hub](https://addons.mozilla.org/developers/) and sign in with a Mozilla account
    (create one if you have none). The first time, accept the developer agreement.
 3. Click **Submit a New Add-on** and choose **On your own**. This is *self-distribution*: Mozilla signs
