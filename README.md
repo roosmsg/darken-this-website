@@ -28,8 +28,6 @@ private and does not appear in the store.
 
 ## How it works
 
-<p align="center"><img src="logo/banner.png" width="480" alt="A page with the left half light and the right half darkened"></p>
-
 - **Click the icon or press Alt+Shift+M:** the site is switched on and remembered. From then on it is
   dark on every load, before the page is drawn. Click again to switch it off and forget it.
 - **What you see:** dark background, light text, blue links turn yellow, the page dimmed to 85 %.
@@ -46,6 +44,8 @@ private and does not appear in the store.
 - **Privacy:** permissions are `activeTab`, `storage` and access to all sites, so switching a site on never
   needs a prompt. No script runs on sites you did not switch on. No network. The list of switched-on
   sites is the only thing stored.
+
+<p align="center"><img src="logo/banner.png" width="480" alt="A page with the left half light and the right half darkened"></p>
 
 ## Install
 
