@@ -47,7 +47,7 @@ private and does not appear in the store.
 
 <br>
 
-<p align="center"><img src="logo/banner.png" width="480" alt="A page with the left half light and the right half darkened"></p>
+<p align="center"><img src="logo/banner-split.png" width="480" alt="A page with the left half light and the right half darkened"></p>
 
 <br>
 
