@@ -45,7 +45,11 @@ private and does not appear in the store.
   needs a prompt. No script runs on sites you did not switch on. No network. The list of switched-on
   sites is the only thing stored.
 
+<br>
+
 <p align="center"><img src="logo/banner.png" width="480" alt="A page with the left half light and the right half darkened"></p>
+
+<br>
 
 ## Install
 
